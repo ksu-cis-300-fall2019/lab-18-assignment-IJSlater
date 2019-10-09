@@ -18,6 +18,79 @@ namespace Ksu.Cis300.NameLookup
     /// <typeparam name="TValue">The value type.</typeparam>
     public class Dictionary<TKey, TValue> where TKey : IComparable<TKey>
     {
+
+        private static BinaryTreeNode<KeyValuePair<TKey, TValue>> RemoveMininumKey(BinaryTreeNode<KeyValuePair<TKey, TValue>> t, out KeyValuePair<TKey, TValue> min)
+        {
+            BinaryTreeNode<KeyValuePair<TKey, TValue>> hold = t.LeftChild;
+            if (hold.LeftChild != null)
+            {
+                //hold = hold.LeftChild;
+                return RemoveMininumKey(hold.LeftChild, out min);
+            }
+            else
+            {
+                //BinaryTreeNode<KeyValuePair<TKey, TValue>> hold2 = hold;
+                min = t.Data;
+                return hold;
+            }
+        }
+
+        private static BinaryTreeNode<KeyValuePair<TKey, TValue>> Remove(TKey key, BinaryTreeNode<KeyValuePair<TKey, TValue>> t, out bool removed)
+        {
+            KeyValuePair<TKey, TValue> data;
+            BinaryTreeNode<KeyValuePair<TKey, TValue>> start;
+
+
+            if (t == null)
+            {
+                removed = false;
+                return null;
+            }
+            else
+            {
+                int comp = key.CompareTo(t.Data.Key);
+                if (comp == 0)
+                {
+                    if (t.RightChild == null && t.LeftChild == null)
+                    {
+                        removed = true;
+                        return null;
+                    }
+                    else
+                    {
+                        BinaryTreeNode<KeyValuePair<TKey, TValue>> minimum = RemoveMininumKey(t, out data);
+                        removed = true;
+                        return new BinaryTreeNode<KeyValuePair<TKey, TValue>>(data, t.LeftChild, minimum);
+                    }
+                }
+                else if (comp < 0)
+                {
+
+                    return new BinaryTreeNode<KeyValuePair<TKey, TValue>>(t.Data, Remove(key, t.LeftChild, out removed), t.RightChild);
+                }
+                else
+                {
+                    return new BinaryTreeNode<KeyValuePair<TKey, TValue>>(t.Data, t.LeftChild, Remove(key, t.RightChild, out removed));
+                }
+            }
+
+
+
+
+       
+        }
+
+
+        public bool Remove(TKey k)
+        {
+            //KeyValuePair<TKey,TValue> h;
+            bool h;
+            Remove(k,_elements,out h );
+            return h;
+        }
+
+
+
         /// <summary>
         /// The keys and values in the dictionary.
         /// </summary>
